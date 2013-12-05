@@ -3,6 +3,7 @@
 * [NEW] In-game Map - Unused Arma UI has been removed, from DayZ CE 1.8. @Skaronator
 * [NEW] Gear is only accessible in vehicles with "G" key due to removal of Arma Map Menus, from DayZ CE 1.8. @Skaronator
 
+* [ADDED] Dead players bodies now convert to a grave after about 30 minutes, filling the grave with all the players items. The grave will stay around until server restart.
 * [ADDED] Radiation effect with geiger counter sounds and eventual rapidblood loss when player goes out of the map for too long.
 * [ADDED] Craft-able Gunrack with 6 x PartWoodLumber makes GunRack_DZ that holds 20 weapons/10 magazines. http://i.imgur.com/mfY0uLN.jpg  @dayz10k
 * [ADDED] Craft-able Base Fire Barrel FireBarrel_DZ with an empty Fuel Barrel, Full Jerry Can, and 4x WoodPile. http://i.imgur.com/2KHWdMS.jpg @dayz10k
@@ -20,9 +21,9 @@
 * [ADDED] Faster in string function by Killzone Kid http://killzonekid.com/arma-scripting-tutorials-how-to-find-a-string-within-a-string/
 * [ADDED] Halo jump option from a helicopter when above 400m. @zabn
 * [ADDED] Localization support added. @zabn @dayz10k
-* [ADDED] Added dutch translations. @JoSchaap
-* [ADDED] Added Russian translations. @VeryBigBro
-* [ADDED] Added French translations. @th4z
+* [ADDED] Added Dutch localization. @JoSchaap
+* [ADDED] Added Russian localization. @VeryBigBro
+* [ADDED] Added French localization. @th4z
 * [ADDED] Chernarus-Spawnselection and 1.8 GUI-Icons to the dayz_code.pbo - experienced server admins can use it. @Skaronator
 * [ADDED] Global variable if player is fresh spawned. Can used for custom script like in spawn-camera script ("freshSpawn = 0" - Normal Spawn / 1 - fresh spawn as zombie / 2 - fresh spawn as player) @Skaronator
 * [ADDED] Added 7 more male skins from Arma http://i.imgur.com/1b0n2Jy.png @axles @vbawol
@@ -63,6 +64,7 @@
 * [FIXED] Case sensitivity issues with last versions SQL update calls.
 * [FIXED] Recent Murders on the Murder Board in trader cities now works properly. @vbawol
 
+* [CHANGED] Trader menu "Buy" button will now disable or grey out if you do not have the correct funds available.
 * [CHANGED] Metals can now be converted from 10oz to 1oz without tools or the need for a fire. @vbawol
 * [CHANGED] Mission name and descriptions now conform to template. @dayz10k
 * [CHANGED] Increased armor levels on wooded modular base building objects by 300%.

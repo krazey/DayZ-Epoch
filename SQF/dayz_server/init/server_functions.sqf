@@ -17,6 +17,7 @@ server_deleteObj =			compile preprocessFileLineNumbers "\z\addons\dayz_server\co
 server_swapObject =			compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_swapObject.sqf"; 
 server_publishVeh = 		compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_publishVehicle.sqf"; // Custom to add vehicles
 server_publishVeh2 = 		compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_publishVehicle2.sqf"; // Custom to add vehicles
+server_publishVeh3 = 		compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_publishVehicle3.sqf"; // Custom to add vehicles
 server_tradeObj = 			compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_tradeObject.sqf";
 server_traders = 			compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_traders.sqf";
 server_playerSync =			compile preprocessFileLineNumbers "\z\addons\dayz_server\compile\server_playerSync.sqf";
@@ -58,7 +59,7 @@ array_reduceSizeReverse = {
 array_reduceSize = {
 	private ["_array1","_array","_count","_num"];
 	_array1 = _this select 0;
-	_array = _array1 - ["Hatchet_Swing","Machete_Swing","Fishing_Swing","sledge_swing","crowbar_swing"];
+	_array = _array1 - ["Hatchet_Swing","Machete_Swing","Fishing_Swing","sledge_swing","crowbar_swing","CSGAS"];
 	_count = _this select 1;
 	_num = count _array;
 	if (_num > _count) then {
@@ -138,7 +139,7 @@ eh_localCleanup =			{
 			clearVehicleInit _unit;
 			deleteVehicle _unit;
 			deleteGroup _myGroupUnit;
-			_unit = nil;
+			//_unit = nil;
 			diag_log ("CLEANUP: DELETED A " + str(_type) );
 		};
 	}];
@@ -597,6 +598,7 @@ dayz_recordLogin = {
 };
 
 dayz_perform_purge = {
+	
 	_this removeAllMPEventHandlers "mpkilled";
 	_this removeAllMPEventHandlers "mphit";
 	_this removeAllMPEventHandlers "mprespawn";
@@ -610,8 +612,80 @@ dayz_perform_purge = {
 	clearVehicleInit _this;
 	deleteVehicle _this;
 	deleteGroup (group _this);
-	_this = nil;
+	//  _this = nil;
 };
+
+dayz_perform_purge_player = {
+
+	private ["_countr","_backpack","_backpackType","_backpackWpn","_backpackMag","_objWpnTypes","_objWpnQty","_location","_dir","_holder","_weapons","_magazines"];
+    diag_log ("Purging player: " + str(_this));	
+
+	_location = getPosATL _this;
+	_dir = getDir _this;
+
+	_holder = createVehicle ["GraveDZE", _location, [], 0, "CAN_COLLIDE"];
+	_holder setDir _dir;
+	_holder setPosATL _location;
+
+	_holder enableSimulation false;
+
+	_weapons = weapons _this;
+    _magazines = magazines _this;
+
+	// find backpack
+	if(!(isNull unitBackpack _this)) then {
+		_backpack = unitBackpack _this;
+		_backpackType = typeOf _backpack;
+		_backpackWpn = getWeaponCargo _backpack;
+		_backpackMag = getMagazineCargo _backpack;
+
+		_holder addBackpackCargoGlobal [_backpackType,1];
+
+		// add items from backpack 
+		_objWpnTypes = _backpackWpn select 0;
+		_objWpnQty = _backpackWpn select 1;
+		_countr = 0;
+		{
+			_holder addWeaponCargoGlobal [_x,(_objWpnQty select _countr)];
+			_countr = _countr + 1;
+		} forEach _objWpnTypes;
+
+		// add backpack magazine items
+		_objWpnTypes = _backpackMag select 0;
+		_objWpnQty = _backpackMag select 1;
+		_countr = 0;
+		{
+			_holder addMagazineCargoGlobal [_x,(_objWpnQty select _countr)];
+			_countr = _countr + 1;
+		} forEach _objWpnTypes;
+	};
+
+	// add weapons
+	{ 
+		_holder addWeaponCargoGlobal [_x, 1];
+	} forEach _weapons;
+
+	// add mags
+	{ 
+		_holder addMagazineCargoGlobal [_x, 1];
+	} forEach _magazines;
+
+	_this removeAllMPEventHandlers "mpkilled";
+	_this removeAllMPEventHandlers "mphit";
+	_this removeAllMPEventHandlers "mprespawn";
+	_this removeAllEventHandlers "FiredNear";
+	_this removeAllEventHandlers "HandleDamage";
+	_this removeAllEventHandlers "Killed";
+	_this removeAllEventHandlers "Fired";
+	_this removeAllEventHandlers "GetOut";
+	_this removeAllEventHandlers "GetIn";
+	_this removeAllEventHandlers "Local";
+	clearVehicleInit _this;
+	deleteVehicle _this;
+	deleteGroup (group _this);
+	//  _this = nil;
+};
+
 
 dayz_removePlayerOnDisconnect = {
 	_this removeAllMPEventHandlers "mphit";
@@ -621,7 +695,8 @@ dayz_removePlayerOnDisconnect = {
 
 server_timeSync = {
 	//Send request
-	_key = "CHILD:307:";
+	private ["_year","_month","_day","_hour","_minute","_date","_key","_result","_outcome"];
+    _key = "CHILD:307:";
 	_result = _key call server_hiveReadWrite;
 	_outcome = _result select 0;
 	if(_outcome == "PASS") then {
@@ -659,13 +734,15 @@ server_spawncleanDead = {
 				_x call dayz_perform_purge;
 				sleep 0.025;
 				_delQtyZ = _delQtyZ + 1;
-			};
-			if (_x isKindOf "CAManBase") then {
-				_deathTime = _x getVariable ["processedDeath", diag_tickTime];
-				if (diag_tickTime - _deathTime > 3600) then {
-					_x call dayz_perform_purge;
-					sleep 0.025;
-					_delQtyP = _delQtyP + 1;
+			} else {
+
+				if (_x isKindOf "CAManBase") then {
+					_deathTime = _x getVariable ["processedDeath", diag_tickTime];
+					if (diag_tickTime - _deathTime > 1800) then {
+						_x call dayz_perform_purge_player;
+						sleep 0.025;
+						_delQtyP = _delQtyP + 1;
+					};
 				};
 			};
 		};
@@ -673,7 +750,7 @@ server_spawncleanDead = {
 	} forEach _allDead;
 	if (_delQtyZ > 0 or _delQtyP > 0) then {
 		_qty = count _allDead;
-		diag_log (format["CLEANUP: Deleted %1 players and %2 out of dead %3",_delQtyP,_delQtyZ,_qty]);
+		diag_log (format["CLEANUP: Deleted %1 players and %2 zombies out of %3 dead",_delQtyP,_delQtyZ,_qty]);
 	};
 };
 
@@ -682,6 +759,7 @@ server_spawnCleanNull = {
 	_delQtyNull = 0;
 	{
 		if (isNull _x) then {
+			diag_log (format["CLEANUP: Purge performed on null OBJ: %1",_x]);
 			_x call dayz_perform_purge;
 			sleep 0.025;
 			_delQtyNull = _delQtyNull + 1;

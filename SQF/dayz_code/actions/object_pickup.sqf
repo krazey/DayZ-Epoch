@@ -13,10 +13,7 @@ _holder = _array select 2;
 
 // if holder is null disallow pickup for 5 seconds 
 if(isNull _holder) exitWith { 
-	[] spawn { 
-		sleep 5; 
-		DZE_CanPickup = true;
-	}; 
+	DZE_CanPickup = true;
 };
 
 // Check if closest player
@@ -30,10 +27,12 @@ player playActionNow "PutDown";
 if(_classname isKindOf "TrapBear") exitwith {DZE_CanPickup = true; deleteVehicle _holder;};
 
 if(_classname isKindOf "Bag_Base_EP1") exitwith {
+	
 	// diag_log("Picked up a bag: " + _classname);
 	if(_classname == typeOf _holder) then {
 		player action ["TakeBag", _holder];
 	};
+	DZE_CanPickup = true;
 };
 
 _obj = nearestObjects [(getPosATL player), [(typeOf _holder)], 5];
@@ -58,8 +57,4 @@ if(_qty >= 1) then {
 	};
 };
 
-// disallow another pickup action for 5 seconds.
-[] spawn { 
-	sleep 5; 
-	DZE_CanPickup = true;
-};
+DZE_CanPickup = true;
