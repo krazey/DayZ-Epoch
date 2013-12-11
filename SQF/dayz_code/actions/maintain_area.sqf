@@ -10,9 +10,18 @@ player removeAction s_player_maintain_area_preview;
 s_player_maintain_area_preview = 1;
 
 _target = cursorTarget; // Plastic_Pole_EP1_DZ
-_objectClasses = ["ModularItems", "DZE_Housebase"];
+_objectClasses = ["ModularItems", "DZE_Housebase"] + DZE_ExtraMaintain;
 _range = 50; // set the max range for the maintain area
 _objects = nearestObjects [_target, _objectClasses, _range];
+
+//filter to only those that have 10% damage
+_objects_filtered = [];
+{
+    if (damage _x >= 0.1) then {
+        _objects_filtered set [count _objects_filtered, _x];
+   };
+} forEach _objects;
+_objects = _objects_filtered;
 
 // TODO dynamic requirements based on used building parts?
 _count = count _objects;
@@ -100,7 +109,7 @@ switch _option do {
 					// Set location
 					_object setPosATL _location;
 
-					PVDZE_obj_Swap = [_objectCharacterID,_object,[_dir,_location],_classname,_obj,_objectID,_objectUID];
+					PVDZE_obj_Swap = [_objectCharacterID,_object,[_dir,_location],_classname,_obj,player];
 					publicVariableServer "PVDZE_obj_Swap";
 
 					player reveal _object;
@@ -108,8 +117,8 @@ switch _option do {
 				
 				cutText [format["You have maintained %1 building parts.", _count], "PLAIN DOWN", 5];
 				// uncomment the next 2 lines if you want logging of area maintenance to the server report file (Arma2OAserver.RPT)
-				maintainArea_log = [player, _target, _count];
-				publicVariableServer "maintainArea_log";
+				//maintainArea_log = [player, _target, _count];
+				//publicVariableServer "maintainArea_log";
 			} else {
 				{player addMagazine _x;} forEach _temp_removed_array;
 				cutText [format["Missing Parts after first check Item: %1 / %2",_removed_total,_tobe_removed_total], "PLAIN DOWN"];

@@ -1,4 +1,28 @@
 == ROLLING CHANGE LOG 1.0.3.1 ==
+[ADDED] In game clarification on modular removal: you cannot delete locked doors, you must remove the lock first. @dayz10k
+[ADDED] Added updated setDamage exception to battleye scripts.txt. @vbawol
+[ADDED] Built in antihack enabled by default via mission init.sqf. @facoptre
+[ADDED] Added Czech Translations Credits: GeodarCZ, Brovns, Doomscythe
+[ADDED] DZE_requireplot override variable added. DZE_requireplot = 0; in init.sqf disables plot pole requirement to build. @vbawol
 
 [FIXED] Incorporated DayZ CE skin changing routines to properly save melee magazines (chainsaw) and add back actions after skin changes. @dayz10k
 [FIXED] Proper stringtables (options) on SkinBase craftables (bandages, canvas) @dayz10k
+[FIXED] Optimized RoadFlare/chemlight code to use only one allMissionObjects call instead of two. @vbawol
+[FIXED] dayz_minpos was set to 0 for chernarus and should have been -1 or less. @vbawol
+[FIXED] Fixed some typos in Sahrani mission files. @vbawol
+[FIXED] Removed radar from GAZ Vodnik. @dayz10k
+[FIXED] Incorrect paths for tavi traders.
+[FIXED] Armored SUV DZ had incorrect max weapon count. @vbawol
+[FIXED] Fixed two createvehicle calls for weapon spawn_loot.@Torndeco
+
+[CHANGED] Lower plank pack spawn chance raise sledge handle and fishing pole chances in farm spawns. @vbawol
+[CHANGED] Must take backpack off before you can change clothes.  @vbawol
+[CHANGED] Removed 10m check for nearby players when chaning clothes.  @vbawol
+[CHANGED] Null cleanup was not working as intended disabled by default needs further testing. @vbawol
+[CHANGED] Lower zombie attack range and made static at 2.5m. @vbawol
+[CHANGED] Restructured server files. @vbawol
+
+[INFO] Models/textures by Paul Tomany. @Sequisha.
+[INFO] Special thanks to http://bmrf.me/ for hosting our development server. 
+
+[REMOVED] Many uneeded diag_log calls removed.
